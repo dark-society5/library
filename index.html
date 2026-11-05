@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="A basic SGML study guide library and reader.">
+  <title>Library</title>
+  <link rel="preconnect" href="https://githubraw.com" crossorigin>
+  <link rel="stylesheet" href="https://githubraw.com/cardhollow/sgml/main/style.css" data-sgml-upstream="style.css">
+  <link id="app-styles" rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div id="sgml-library-app" class="app-shell">
+    <aside id="library-panel" class="library-panel" aria-label="Study guide library">
+      <div class="library-header">
+        <div class="brand-lockup">
+          <div class="brand-copy">
+            <div class="brand-title">SGML</div>
+            <div class="brand-subtitle">Study library</div>
+          </div>
+        </div>
+        <button id="close-library" class="icon-button drawer-close" type="button" aria-label="Close library" title="Close library">×</button>
+      </div>
+
+      <form id="document-search-form" class="library-search-wrap" role="search" aria-label="Search study guides">
+        <label class="sr-only" for="document-search">Search document titles and loaded contents</label>
+        <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 4.2 4.2"></path></svg>
+        <input id="document-search" type="search" placeholder="Search titles and loaded contents" autocomplete="off" spellcheck="false" enterkeyhint="go">
+        <button id="document-search-go" class="search-go-button" type="submit" aria-label="Go to next search match">Go</button>
+      </form>
+
+      <div class="list-heading-row">
+        <div>
+          <div class="list-heading">Documents</div>
+          <div id="library-count" class="list-subheading">Connecting to Google Drive…</div>
+        </div>
+        <button id="refresh-library" class="icon-button refresh-button" type="button" aria-label="Refresh library" title="Refresh library">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5"></path><path d="M19 12a7.5 7.5 0 0 0-13.1-4.9L4 9"></path><path d="M4 17v-5h5"></path><path d="M5 12a7.5 7.5 0 0 0 13.1 4.9L20 15"></path></svg>
+        </button>
+      </div>
+
+      <div id="document-list" class="document-list" role="list" aria-live="polite">
+        <div class="list-placeholder"><span class="spinner"></span><span>Loading documents…</span></div>
+      </div>
+
+      <div class="library-footer">
+        <span class="online-indicator"></span>
+        <span>Google Drive folder</span>
+      </div>
+    </aside>
+
+    <button id="drawer-backdrop" class="drawer-backdrop" type="button" aria-label="Close library menu" aria-hidden="true" tabindex="-1"></button>
+
+    <main class="reader-shell">
+      <header class="reader-topbar">
+        <div class="reader-topbar-left">
+          <h1 id="reader-heading">Study guides</h1>
+        </div>
+        <div class="reader-topbar-right">
+          <button id="refresh-document" class="icon-button refresh-button reader-refresh-button" type="button" aria-label="Refresh current document" title="Refresh current document" hidden>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5"></path><path d="M19 12a7.5 7.5 0 0 0-13.1-4.9L4 9"></path><path d="M4 17v-5h5"></path><path d="M5 12a7.5 7.5 0 0 0 13.1 4.9L20 15"></path></svg>
+          </button>
+          <div id="reader-status" class="reader-status"><span class="status-dot"></span><span>Ready</span></div>
+          <button id="open-library" class="menu-button" type="button" aria-label="Open library" aria-expanded="false" title="Open library">
+            <svg class="menu-glyph" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
+          </button>
+        </div>
+      </header>
+
+      <section class="reader-content" aria-label="Rendered SGML document">
+        <div id="welcome-state" class="welcome-state">
+          <h2>Choose a study guide</h2>
+          <p>Select a file from the Google Drive folder to render it here.</p>
+          <button id="welcome-open-library" class="primary-button" type="button">Browse documents</button>
+        </div>
+        <div id="loading-state" class="document-loading" hidden>
+          <span class="large-spinner" aria-hidden="true"></span>
+          <strong>Preparing your study guide</strong>
+          <span id="loading-detail">Fetching the file from Google Drive…</span>
+        </div>
+        <div id="document-error" class="document-error" hidden role="alert">
+          <h2>Couldn’t load this document</h2>
+          <p id="document-error-message">Please try again.</p>
+          <button id="retry-document" class="secondary-button" type="button">Try again</button>
+        </div>
+        <article id="render-surface" class="render-surface" hidden>
+          <div id="sgml-output"></div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <div id="sgml-toast-wrap">
+    <div id="sgml-toast-card" class="toast-card is-info" role="status" aria-live="polite" aria-atomic="true">
+      <span id="sgml-toast-icon" class="toast-icon" aria-hidden="true">i</span>
+      <span id="sgml-toast-message" class="toast-message"></span>
+      <button id="sgml-toast-dismiss" class="toast-dismiss" type="button" aria-label="Dismiss notification">×</button>
+    </div>
+  </div>
+
+  <script>
+    window.MathJax = {
+      typeset: false,
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true,
+        processEnvironments: true
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        ignoreHtmlClass: 'tex2jax_ignore',
+        processHtmlClass: 'tex2jax_process'
+      },
+      startup: { typeset: false }
+    };
+  </script>
+  <!-- Upstream SGML runtime: real static script imports, in dependency order.
+       githubraw serves the current main-branch files directly. These are not
+       local renderer or converter copies. -->
+  <script defer src="https://githubraw.com/cardhollow/sgml/main/tex-chtml.js" data-sgml-upstream="tex-chtml.js"></script>
+  <script defer src="https://githubraw.com/cardhollow/sgml/main/marked.js" data-sgml-upstream="marked.js"></script>
+  <script defer src="https://githubraw.com/cardhollow/sgml/main/js/editor-language.js" data-sgml-upstream="js/editor-language.js"></script>
+  <script defer src="https://githubraw.com/cardhollow/sgml/main/js/app-state.js" data-sgml-upstream="js/app-state.js"></script>
+  <script defer src="https://githubraw.com/cardhollow/sgml/main/js/sgml-renderer.js" data-sgml-upstream="js/sgml-renderer.js"></script>
+  <script defer src="https://githubraw.com/cardhollow/sgml/main/js/file-converter.js" data-sgml-upstream="js/file-converter.js"></script>
+
+  <!-- Local adapter/UI code runs only after every upstream defer script above. -->
+  <script defer src="./js/upstream-runtime.js?v=20261105-static-imports-1"></script>
+  <script defer src="./js/sgml-document-fetcher.js?v=20261105-static-imports-1"></script>
+  <script defer src="./js/search-indexer.js?v=20261105-worker-search-v4"></script>
+  <script defer src="./js/drive-library.js?v=20261105-worker-search-v4"></script>
+  <script defer src="./js/app.js?v=20261105-static-imports-1"></script>
+</body>
+</html>
